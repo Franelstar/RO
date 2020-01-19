@@ -1,3 +1,4 @@
+package cm.ro.graphe.model;
 import java.util.ArrayList;
 
 public class Graphe {
@@ -9,13 +10,14 @@ public class Graphe {
 	}
 	
 	public Graphe(Noeud[] nds) {
-    //a completer
+		/*for(Noeud noeud : noeuds) {
+			
+		}*/
+		
 	}
 	
 	
 	public void affiche() {
     //a completer
-	}
-	
-	
+	}	
 }
