@@ -1,27 +1,26 @@
 package cm.ro.graphe.model;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class Noeud implements Comparable<Noeud> {
-	protected UUID id;
 	protected int nbVoisins;
+	protected String label;
 	// c'est plus simple d'ajouter et d'enlever des elements avec une liste qu'avec un array
-	protected ArrayList<Noeud>  successeurs;
-	protected ArrayList<Integer> arcs; //arcs sortant 
+	protected ArrayList<Noeud>  successeurs = new ArrayList<Noeud>();
+	protected ArrayList<Integer> arcs = new ArrayList<>();; //arcs sortant 
 	
 	// cree un noeud isole
-	public Noeud(int i) {
+	public Noeud(String l) {
 		//a completer
-		this.id = UUID.randomUUID();
+		this.label = l;
 		this.nbVoisins = 0;
 	}
 	
 	// cree un noeud a partir d'une liste de voisins
 	// les arcs sont de poids 1
-	public Noeud(int i, Noeud[] noeuds) {
+	public Noeud(String l, int i, Noeud[] noeuds) {
 		//a completer
 		if(i != noeuds.length) {
-			id = UUID.randomUUID();
+			label = l;
 			nbVoisins = i;
 			for(Noeud nd : noeuds) {
 				successeurs.add(nd);
@@ -41,9 +40,13 @@ public class Noeud implements Comparable<Noeud> {
 	}
 	
 	// renvoie l'id
-	public String getId() {
+	public String getLabel() {
 		//a completer
-		return this.id.toString();
+		return label;
+	}
+	
+	public void setLabel(String l) {
+		this.label = l;
 	}
 	
 	// renvoie le degre sortant, qui vaut la somme des elements de arcs
@@ -58,7 +61,7 @@ public class Noeud implements Comparable<Noeud> {
 		if(this.successeurs.size() > 0) {
 			String listeVoisins = new String("Les voisins sont :\n");
 			for(Noeud noe : successeurs) {
-				listeVoisins += noe.getId();
+				listeVoisins += noe.getLabel();
 				listeVoisins += "\n";
 			}
 			return listeVoisins;
@@ -103,7 +106,7 @@ public class Noeud implements Comparable<Noeud> {
 		}
 		else {
 			this.successeurs.add(v);
-			this.arcs.set(this.successeurs.indexOf(v), d);
+			this.arcs.add(d);
 			this.nbVoisins++;
 		}
 		return this.successeurs.size();
@@ -125,7 +128,7 @@ public class Noeud implements Comparable<Noeud> {
 	
 	@Override
 	public int compareTo(Noeud o) {
-		if ( id.equals(o.id)) {
+		if ( label == o.getLabel()) {
 			return 1;
 		}
 		else {
@@ -133,5 +136,8 @@ public class Noeud implements Comparable<Noeud> {
 		}
 	}
 	
+	public ArrayList<Noeud> getSuccesseurs(){
+		return successeurs;
+	}
 
 }
