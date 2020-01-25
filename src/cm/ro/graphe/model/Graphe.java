@@ -21,8 +21,10 @@ public class Graphe {
 	}
 	
 	public void creerNoeud(Noeud neu) {
-		noeuds.add(neu);
-		nbNoeuds = noeuds.size();
+		if(!contentNoeud(neu.label)) {
+			noeuds.add(neu);
+			nbNoeuds = noeuds.size();
+		}
 	}
 	
 	public String getNom() {
@@ -59,6 +61,22 @@ public class Graphe {
 				return true;
 		}
 		return false;
+	}
+	
+	public boolean contentNoeudIndex(int c) {
+		for(int i = 0; i < noeuds.size(); i++) {
+			if(i == c)
+				return true;
+		}
+		return false;
+	}
+	
+	public void deleteNoeud(Noeud neu) {
+		for(Noeud n : noeuds) {
+			n.enleveVoisin(neu);
+		}
+		noeuds.remove(noeuds.indexOf(neu));
+		this.nbNoeuds--;
 	}
 	
 	public ArrayList<Noeud> getListeNoeud(){

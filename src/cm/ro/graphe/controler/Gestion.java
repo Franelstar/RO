@@ -3,6 +3,12 @@
  */
 package cm.ro.graphe.controler;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -28,6 +34,14 @@ public class Gestion {
 		}
 		return false;
 	}
+	
+	protected boolean contentIndex(int index) {
+		for(int i = 0; i < graphe.size(); i++) {
+			if(i == index)
+				return true;
+		}
+		return false;
+	}
 		
 	public void play() {
 		int reponse = 10;
@@ -38,9 +52,10 @@ public class Gestion {
 			System.out.println("1. Créer un graphe");
 			System.out.println("2. Ouvrir un graphe");
 			System.out.println("3. Modifier un graphe");
-			System.out.println("4. Voir un graphes");
+			System.out.println("4. Voir un graphe");
 			System.out.println("5. Sauvegarder un graphe");
-			System.out.println("6. Supprimer un graphe");
+			System.out.println("6. Exporter un graphe");
+			System.out.println("7. Supprimer un graphe");
 			System.out.println("9. Quitter");
 			System.out.print("Veillez faire un choix : ");
 			
@@ -65,6 +80,14 @@ public class Gestion {
 			
 			if(reponse == 4) {
 				voirGraphe();
+			}
+			
+			if(reponse == 6) {
+				exporterGraphe();
+			}
+			
+			if(reponse == 7) {
+				supprimergraphe();
 			}
 		}
 	}
@@ -144,6 +167,10 @@ public class Gestion {
 			if(reponse == 2) {
 				modifierNoeud(i);
 			}
+			
+			if(reponse == 3) {
+				supprimerNoeud(i);
+			}
 		}
 		
 	}
@@ -198,7 +225,6 @@ public class Gestion {
 							noe = sc.next();
 							if(graphe.get(i).contentNoeud(noe)) {
 								n.ajouteVoisin(graphe.get(i).getNoeud(noe), 1);
-								graphe.get(i).getNoeud(noe).ajouteVoisin(n, 1);
 							}
 							nbre2 = 899;
 						}
@@ -207,7 +233,6 @@ public class Gestion {
 						neunc = creerNoeud(i);
 						graphe.get(i).creerNoeud(neunc);
 						n.ajouteVoisin(neunc, 1);
-						neunc.ajouteVoisin(n, 1);
 						nbre2 = 899;
 					}
 				}
@@ -218,19 +243,19 @@ public class Gestion {
 	
 	public void modifierNoeud(int i) {
 		clearConsole();
-		int reponse = 1;
-		while(reponse != 99) {
+		int reponse2 = 1;
+		while(reponse2 != 99) {
 			if(graphe.get(i).getListeNoeud().size() == 0) {
 				System.out.println("---Modifier un noeud du graphe " + graphe.get(i).getNom() + "---");
 				System.out.println("Liste des Noeuds :");
 				System.out.println("La liste des noeuds est vide");
 				System.out.println("99. Sortir");
 				System.out.print("veuillez faire un choix :");
-				reponse = sc.nextInt();
+				reponse2 = sc.nextInt();
 				clearConsole();
 			}
 			else {
-				int reponse2 = -1;
+				reponse2 = -1;
 				clearConsole();
 				System.out.println("---Modifier un noeud du graphe " + graphe.get(i).getNom() + "---");
 				while(reponse2 != 99) {
@@ -297,7 +322,6 @@ public class Gestion {
 											noe = sc.next();
 											if(graphe.get(i).contentNoeud(noe)) {
 												graphe.get(i).getListeNoeud().get(reponse2).ajouteVoisin(graphe.get(i).getNoeud(noe), 1);
-												graphe.get(i).getNoeud(noe).ajouteVoisin(graphe.get(i).getListeNoeud().get(reponse2), 1);
 											}
 											nbre2 = 99;
 										}
@@ -306,7 +330,6 @@ public class Gestion {
 										neunc = creerNoeud(i);
 										graphe.get(i).creerNoeud(neunc);
 										graphe.get(i).getListeNoeud().get(reponse2).ajouteVoisin(neunc, 1);
-										neunc.ajouteVoisin(graphe.get(i).getListeNoeud().get(reponse2), 1);
 										nbre2 = 99;
 									}
 								}	
@@ -314,16 +337,18 @@ public class Gestion {
 							
 							if(reponse3 == 3) {
 								String reponse4 = "";
-								while(reponse4 != "99") {
+								while(!reponse4.equals("99")) {
 									System.out.println("---Supprimer voisin de " + graphe.get(i).getListeNoeud().get(reponse2).getLabel() + "---");
 									if(graphe.get(i).getListeNoeud().get(reponse2).getNbVoisins() > 0) {
-										System.out.println("Liste des voisins : ");
+										System.out.println("Liste des voisins de " + graphe.get(i).getListeNoeud().get(reponse2).getLabel() + " : ");
 										for(Noeud n : graphe.get(i).getListeNoeud().get(reponse2).getSuccesseurs()) {
 											System.out.println(n.getLabel());
 										}
 										System.out.println("99. Retour");
 										System.out.print("Veillez faire un choix : ");
 										reponse4 = sc.next();
+										graphe.get(i).getListeNoeud().get(reponse2).enleveVoisin(graphe.get(i).getNoeud(reponse4));
+										clearConsole();
 									}
 									else {
 										System.out.println("Aucun voisin trouvé");
@@ -339,8 +364,33 @@ public class Gestion {
 						clearConsole();
 						System.out.println("Choix invalide !");  
 					}
-					reponse = 99;
 				}
+			}
+		}
+	}
+	
+	public void supprimerNoeud(int i){
+		int reponse = -1;
+		while(reponse != 99) {
+			clearConsole();
+			System.out.println("---Supprimer un noeuds du graphe " + graphe.get(i).getNom() + "---");
+			if(graphe.get(i).getListeNoeud().size() > 0) {
+				System.out.println("Liste des noeuds : ");
+				for(int l = 0; l < graphe.get(i).getListeNoeud().size(); l++) {
+					System.out.println(l+1 + " ." + graphe.get(i).getListeNoeud().get(l).getLabel());
+				}
+				System.out.println("99. Retour");
+				System.out.print("Veillez faire un choix : ");
+				reponse = sc.nextInt();
+				if(graphe.get(i).contentNoeudIndex(reponse-1)) {
+					graphe.get(i).deleteNoeud(graphe.get(i).getNoeud(graphe.get(i).getListeNoeud().get(reponse-1).getLabel()));
+				}
+			}
+			else {
+				System.out.println("La liste des noeuds est vide");
+				System.out.println("99. Retour");
+				System.out.print("Veillez faire un choix : ");
+				reponse = sc.nextInt();
 			}
 		}
 	}
@@ -393,6 +443,152 @@ public class Gestion {
 				System.out.print("Veillez faire un choix : ");
 				cont = sc.nextInt();
 			}
+		}
+	}
+	
+	protected void supprimergraphe() {
+		int reponse = -1;
+		while(reponse != 99) {
+			clearConsole();
+			System.out.println("---Supprimer un graphe---");
+			System.out.println("Liste des graphes : ");
+			if(graphe.size() == 0) {
+				System.out.println("La liste des graphes est vide");
+			}
+			for(int i = 0; i < graphe.size(); i++) {
+				System.out.println(i+1 + " ." + graphe.get(i).getNom());
+			}
+			System.out.println("99. Retour");
+			System.out.print("Veillez faire un choix : ");
+			reponse = sc.nextInt();
+			if(contentIndex(reponse-1))  {
+				graphe.remove(reponse-1);
+			}
+		}
+		
+	}
+	
+	protected void exporterGraphe() {
+		int reponse = -1;
+		while(reponse != 99) {
+			clearConsole();
+			System.out.println("---Exporter un graphe---");
+			System.out.println("Liste des graphes : ");
+			if(graphe.size() == 0) {
+				System.out.println("La liste des graphes est vide");
+			}
+			for(int i = 0; i < graphe.size(); i++) {
+				System.out.println(i+1 + " ." + graphe.get(i).getNom());
+			}
+			System.out.println("99. Retour");
+			System.out.print("Veillez faire un choix : ");
+			reponse = sc.nextInt();
+			if(contentIndex(reponse-1)) {
+				System.out.print("Entrez le nom du fichier : ");
+				String nom = sc.next();
+				toPNG(graphe.get(reponse-1), nom);
+			}
+		}
+	}
+	
+	protected static File createFile(String fPath) {
+		try {
+			File f = new File(fPath);
+			if ( f.exists() ) {
+				String renamePath = fPath + "." + getDate() + getTime();
+				boolean rename = f.renameTo( new File ( renamePath ) );
+				if ( rename ) {
+					System.out.println("File \n\t" + 
+							fPath + "\nexists. Renamed to:\n\t" 
+							+ renamePath);
+				}
+				else {
+					System.out.println("File \n\t" + 
+							fPath + "\nexists and cannot be renamed.");
+					return null;
+				}
+			}
+			//System.out.println("Ole Ole Ole " + f.createNewFile());
+			f.createNewFile();
+			
+			//System.out.println("1.00001");
+			//System.out.println("f null? " + (f == null));
+			
+			return f;
+		}
+		catch(Exception e) {
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			return null;
+		}
+	}
+	
+	// Get today's date in YYYYMMDD format, to be used as file prefix
+	protected static String getDate() {
+		ZonedDateTime t = ZonedDateTime.now();
+		
+		String str = "" + t.getYear() + twoDigits(t.getMonthValue()) + twoDigits(t.getDayOfMonth());
+		return str;
+	}
+	
+	protected static String getTime() {
+		ZonedDateTime t = ZonedDateTime.now();
+		String str;
+		str = "" + t.getHour() + t.getMinute() + t.getSecond();
+		return str;
+	}
+	
+	// FILE MANIPULATION 
+	private static String twoDigits(int n) {
+		String str;
+		if ( n < 10 ) {
+			str = "0" + n;
+		}
+		else {
+			str = "" + n;
+		}
+		return str;
+	}
+	
+	// dessiner un png avec dot
+	public void toPNG ( Graphe graphe, String fichier ) {
+		try {
+			File sortie = createFile(fichier);
+			BufferedWriter buf = new BufferedWriter( 
+					new OutputStreamWriter(
+							new FileOutputStream( sortie ), Charset.forName("UTF-8").newEncoder()
+							)
+					);
+			
+			String line;
+			
+			buf.write("graph " + graphe.getNom() + " {\n");
+			
+			for ( Noeud v : graphe.getListeNoeud() ) {
+				line = "\t" + v.getLabel() + ";\n";
+				buf.write(line);
+			}
+			for ( Noeud v : graphe.getListeNoeud() ) {
+				if ( v.getNbVoisins() > 0 ) {
+					for ( Noeud u : v.getSuccesseurs() ) {
+						line = "\t" + v.getLabel() + " -- " + u.getLabel() + ";\n";
+						buf.write(line);
+					}
+				}
+			}
+			
+			buf.write("}");
+			
+			buf.close();
+ 
+			String commande = "neato -Tpng " + fichier + " -o " + fichier + ".png";
+			Process process = Runtime.getRuntime().exec(commande);
+			process.waitFor();
+			commande = "eog" + fichier + ".png &";
+			process = Runtime.getRuntime().exec(commande);
+			process.waitFor();
+		}
+		catch ( Exception e ) {			
+			e.printStackTrace();
 		}
 	}
 	
